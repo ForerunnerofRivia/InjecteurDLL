@@ -45,6 +45,7 @@ void MainWindow::on_scanbtn_clicked()
    }
 
 
+
 }
 
 
@@ -105,35 +106,71 @@ void MainWindow::PrintProcessNameAndID( DWORD processID )
             GetModuleBaseName( hProcess, hMod, szProcessName,
                                sizeof(szProcessName)/sizeof(TCHAR) );
         }
+        else{
+            return;
+        }
+        // Print the process name and identifier.
+
+        //_tprintf( TEXT("%s  (PID: %u)\n"), szProcessName, processID );
+        // Release the handle to the process.
+        std::wstring ws(szProcessName);
+        std::string str(ws.begin(),ws.end());
+        QCheckBox * crCheckBox = new QCheckBox(str.c_str(),this);
+
+        tuplessucks * crStruct = (tuplessucks*)malloc(sizeof(tuplessucks));
+        crStruct->checkbox = crCheckBox;
+        crStruct->name = szProcessName;
+        crStruct->pid = processID;
+
+        this->processList.push_back(crStruct);
+        CloseHandle( hProcess );
+    }
+    else{
+        return;
     }
 
-    // Print the process name and identifier.
 
-    //_tprintf( TEXT("%s  (PID: %u)\n"), szProcessName, processID );
-    // Release the handle to the process.
-    std::wstring ws(szProcessName);
-    std::string str(ws.begin(),ws.end());
-    QCheckBox * crCheckBox = new QCheckBox(str.c_str(),this);
-
-    tuplessucks * crStruct = (tuplessucks*)malloc(sizeof(tuplessucks));
-    crStruct->checkbox = crCheckBox;
-    crStruct->name = szProcessName;
-    crStruct->pid = processID;
-
-    this->processList.push_back(crStruct);
-    CloseHandle( hProcess );
 }
 
 void MainWindow::cleanCheckBoxes(){
 
     for(int i = 0; i < processList.size();i++){
         processList[i]->checkbox->setCheckState(Qt::CheckState::Unchecked);
+        processList[i]->checkbox->deleteLater();
         layoutScrollarea->removeWidget(processList[i]->checkbox);
         delete processList[i]->checkbox;
     }
 
 
     processList.clear();
+
+}
+
+
+void MainWindow::getprocessToinject(){
+    for(int i = 0; i < processList.size();i++){
+       if(processList[i]->checkbox->checkState()){
+           this->pid = processList[i]->pid;
+       }
+    }
+}
+
+void MainWindow::on_injectbtn_clicked()
+{
+    this->pid = 0;
+    getprocessToinject();
+
+}
+
+void MainWindow::injectLoadLibrary(){
+    if(this->pid == 0){
+        QMessageBox msgBox2;
+        msgBox2.setText("Erreur : Recupération de l'ID du processus séléctionné");
+        msgBox2.setStandardButtons(QMessageBox::Ok);
+        msgBox2.exec();
+        return;
+    }
+
 
 }
 

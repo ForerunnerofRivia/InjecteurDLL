@@ -38,16 +38,21 @@ public:
     int getProcessList();
     void PrintProcessNameAndID( DWORD processID );
     void cleanCheckBoxes();
+    void getprocessToinject();
+    void injectLoadLibrary();
 private:
     QString dllPath;
     std::vector<tuplessucks*> processList;
     QVBoxLayout * layoutScrollarea;
     QWidget * widget;
+    DWORD pid;
 
 private slots:
     void on_dllbtn_clicked();
 
     void on_scanbtn_clicked();
+
+    void on_injectbtn_clicked();
 
 private:
     Ui::MainWindow *ui;
