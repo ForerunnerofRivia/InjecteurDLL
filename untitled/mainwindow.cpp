@@ -159,6 +159,7 @@ void MainWindow::on_injectbtn_clicked()
 {
     this->pid = 0;
     getprocessToinject();
+    injectLoadLibrary();
 
 }
 
@@ -171,6 +172,18 @@ void MainWindow::injectLoadLibrary(){
         return;
     }
 
+    HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, this->pid);
+    LPVOID pDLLPath = VirtualAllocEx(hProcess, 0 , this->dllPath.size()+1,MEM_COMMIT, PAGE_READWRITE);
 
+    WriteProcessMemory(hProcess, pDLLPath, (LPVOID)this->dllPath.toStdString().c_str(),this->dllPath.size()+1,0);
+
+    HANDLE hLoadThread = CreateRemoteThread(hProcess,0,0,
+                                            (LPTHREAD_START_ROUTINE)GetProcAddress(GetModuleHandleA("Kernel32.dll"),
+                                                                                   "LoadLibraryA"), pDLLPath,0,0);
+    WaitForSingleObject(hLoadThread, INFINITE);
+
+    VirtualFreeEx(hProcess,pDLLPath,this->dllPath.size()+1,MEM_RELEASE);
+
+    return;
 }
 
