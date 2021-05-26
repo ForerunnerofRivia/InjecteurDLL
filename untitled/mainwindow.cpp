@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     widget = new QWidget;
     layoutScrollarea = new QVBoxLayout(widget);
     ui->scrollArea->setWidget(widget);
+    ui->progressBar->setValue(0);
 }
 
 MainWindow::~MainWindow()
@@ -24,6 +25,7 @@ void MainWindow::on_dllbtn_clicked()
                                                         "",
                                                          "Dll (*.dll)");
     ui->pathlabel->setText(dllPath);
+    ui->progressBar->setValue(0);
 }
 
 void MainWindow::on_scanbtn_clicked()
@@ -160,7 +162,20 @@ void MainWindow::on_injectbtn_clicked()
     this->pid = 0;
     getprocessToinject();
     injectLoadLibrary();
+    dothebarthing(7,ui->progressBar);
 
+
+}
+
+void MainWindow::dothebarthing(int sleep, QProgressBar * b){
+    b->setValue(0);
+    int i = 0;
+    while(i<100){
+        i++;
+        b->setValue(i);
+        Sleep(sleep);
+    }
+    return;
 }
 
 void MainWindow::injectLoadLibrary(){

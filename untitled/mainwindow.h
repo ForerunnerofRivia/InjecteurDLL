@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QProgressBar>
 #include <QString>
 #include <QFileDialog>
 #include <Windows.h>
@@ -15,7 +16,7 @@
 #include <QLayout>
 #include <QScrollArea>
 #include <QWidget>
-
+#include <thread>
 
 struct tuplessucks{
     TCHAR* name;
@@ -23,7 +24,7 @@ struct tuplessucks{
     QCheckBox* checkbox;
 };
 
-
+void dothebarthing(int sleep);
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -40,6 +41,7 @@ public:
     void cleanCheckBoxes();
     void getprocessToinject();
     void injectLoadLibrary();
+    void dothebarthing(int sleep, QProgressBar * b);
 private:
     QString dllPath;
     std::vector<tuplessucks*> processList;
